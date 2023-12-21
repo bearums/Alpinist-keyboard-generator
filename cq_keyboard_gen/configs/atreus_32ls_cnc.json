@@ -1,0 +1,1 @@
+{"nCols": 4, "nRows": 4, "angle": 5, "columnSpacing": 19, "rowSpacing": 19, "switchHoleSize": 13.97, "hOffset": 35, "plateThickness": 1.5, "spacerThickness": 8.0, "screwHoleDiameter": 3.0, "shape": 0, "split": true, "staggering": [0, 5, 11, 6, 3], "thumbKeys": null, "cnc": true, "notched": true, "name": "atreus_32ls_cnc", "mcu_footprint": [30, 60]}
