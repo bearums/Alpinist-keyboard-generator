@@ -4,7 +4,10 @@ from enum import IntEnum
 from plate import Config, Shape
 from plate import make_plate, get_key_positions
 def make_case(config:Config) -> cq.Sketch:
-    """TODO: make separate floor thickness"""
+    """TODO: make separate floor thickness
+            change fillet parameters
+            add module for leds, encoder and aviator
+            add screw holes"""
     case_height = config.caseHeight
     case_gap = config.caseGap
     wall_thickness=config.wallThickness
@@ -34,8 +37,8 @@ if __name__ =="__main__":
     nrows = 2
     rkn = [1,2]
     switchHoleSize= 13.9
-    config=Config(nrows, rkn, shape=Shape.LEAN, 
-                  caseHeight=4, plateThickness=1,  
+    config=Config( rkn, shape=Shape.LEAN, 
+                  caseHeight=3, plateThickness=1,  
               cs= switchHoleSize+3.4505, rs= switchHoleSize+5.508,
              switchHoleSize= switchHoleSize,
                  caseGap=1.0,
