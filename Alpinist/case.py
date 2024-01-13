@@ -8,25 +8,43 @@ def make_case(config:Config) -> cq.Sketch:
             change fillet parameters
             add module for leds, encoder and aviator
             add screw holes"""
-    case_height = config.caseHeight
-    case_gap = config.caseGap
-    wall_thickness=config.wallThickness
+    
+    # remove hard coding and put into Config!
+    controllerBoxLength = 20
+    controllerBoxWidth=80
+
+    x_centre = 0.5*(min([x[0] for x in list(kp.values())])+ max([x[0] for x in list(kp.values())]))
     
     foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
                           config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
     case = cq.Sketch()
 
-    
     kp = get_key_positions(config)
     
-    case = case.push(kp.values())
-    case = case.rect(foot_x+(case_gap+wall_thickness)*2, foot_y+(case_gap+wall_thickness)*2).faces().clean().offset(wall_thickness).clean()#.vertices().fillet(3)
-    case=cq.Workplane().placeSketch(case).extrude(case_height)
+    case = case.push(list(kp.values())+[(x_centre+20,80) ,(x_centre-20,80), (x_centre,80)])
+    
+    
+    case = (case.rect(foot_x+(config.caseGap+wall_thickness)*2, foot_y+(config.caseGap+wall_thickness)*2)
+            .faces()
+            .clean()
+            .offset(config.wallThickness)
+            .clean())
+    
+    case= (cq.Workplane()
+           .placeSketch(case)
+           .extrude(config.caseHeight))
+    
+    case = (case
+            .edges('>Y and <Z')
+            .workplane(centerOption="CenterOfBoundBox")
+            .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False])
+           )
 
-    case=case.faces("+Z").shell(-wall_thickness).edges("|Z").fillet(3)
-
+    case= (case.faces("+Z")
+           .shell(-wall_thickness)
+           .edges("|Z")
+           .fillet(3))
     return case
-
 
 
 
