@@ -1,5 +1,5 @@
 import cadquery as cq
-
+from config import Config, Shape
 
 
 def get_keys(kp, key_shape, config):

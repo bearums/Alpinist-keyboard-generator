@@ -1,5 +1,7 @@
 from enum import IntEnum
- 
+from controller import Controller
+from controller import AdafruitFeathernRF52840Express
+
 class Shape(IntEnum):
     LEAN = 0
     HULL = 1
@@ -19,6 +21,9 @@ class Config:
     caseHeight: float
     caseGap: float
     wallThickness: float
+        
+    controller : Controller
+        
     def __init__(self, row_key_num, 
                  cs=19, rs=19, 
                  switchHoleSize=13.9,
@@ -31,6 +36,9 @@ class Config:
                  caseHeight=22,
                  caseGap=1.5,
                  wallThickness=1.6,
+                 
+                 controller=AdafruitFeathernRF52840Express()
+                 
                 ):
         self.nrows = len(row_key_num)
         self.row_key_num = row_key_num
@@ -48,5 +56,7 @@ class Config:
         self.caseHeight = caseHeight
         self.caseGap = caseGap
         self.wallThickness = wallThickness
+        
+        self.controller = controller
         
         
