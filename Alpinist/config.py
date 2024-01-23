@@ -22,6 +22,7 @@ class Config:
     caseGap: float
     wallThickness: float
     floorThickness: float
+    edgeFillet: float
         
     controller : Controller
         
@@ -38,6 +39,8 @@ class Config:
                  caseGap=1.5,
                  wallThickness=1.6,
                  floorThickness=2.6,
+
+                 edgeFillet = 3,
                  
                  controller=AdafruitFeathernRF52840Express()
                  
@@ -59,6 +62,8 @@ class Config:
         self.caseGap = caseGap
         self.wallThickness = wallThickness
         self.floorThickness = floorThickness
+
+        self.edgeFillet = 3
         
         self.controller = controller
         
