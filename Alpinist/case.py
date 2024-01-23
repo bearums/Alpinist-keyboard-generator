@@ -3,6 +3,44 @@ from enum import IntEnum
 
 from plate import Config, Shape
 from plate import make_plate, get_key_positions
+
+def make_case_inner_bottom(config:Config) -> cq.Sketch:
+    kp = get_key_positions(config)
+    x_centre = 0.5*(min([x[0] for x in list(kp.values())])+ max([x[0] for x in list(kp.values())]))
+    
+    foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
+                          config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
+    case = cq.Sketch()
+
+    case = case.push(list(kp.values()))
+    
+    
+    case = (case.rect(foot_x+(config.caseGap+config.wallThickness)*2, 
+                      foot_y+(config.caseGap+config.wallThickness)*2)
+            .faces()
+            .clean()
+            .offset(config.wallThickness)
+            .clean())
+    case= (cq.Workplane()
+           .placeSketch(case)
+           .extrude(config.caseHeight))
+    
+    # add box for microcontroller
+    controller_y_offset = 5
+    controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
+    controllerBoxWidth=config.controller.board_dimension_x + 5
+    case = (case
+             .edges('>Y and <Z')
+             .workplane(centerOption="CenterOfBoundBox", invert=False)
+             .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
+             .faces('<Z')
+            .workplane(centerOption="CenterOfBoundBox")
+            .tag("controllerBox")
+            .union(case)
+            )
+    
+    return case
+
 def make_case(config:Config) -> cq.Sketch:
     """TODO: add screw holes for microcontroller (check they are in right position!!)
             make separate floor thickness
