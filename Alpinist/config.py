@@ -65,4 +65,4 @@ class Config:
 
         self.edgeFillet = 3
         
-        self.controller = controller 
+        self.controller = controller  
