@@ -29,7 +29,6 @@ def get_basic_shape(config:Config) -> cq.Sketch:
 
 def make_case(config:Config) -> cq.Sketch:
     """TODO: add screw holes for microcontroller (check they are in right position!!)
-            make separate floor thickness
             change fillet parameters
             add module for leds, encoder and aviator
             """
