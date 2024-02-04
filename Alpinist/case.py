@@ -2,44 +2,47 @@ import cadquery as cq
 from enum import IntEnum
 
 from plate import Config, Shape
-from plate import make_plate, get_key_positions
+from plate import make_plate, get_key_positions, get_screw_positions
 
+def get_basic_shape(config:Config) -> cq.Sketch:
 
+    kp = get_key_positions(config)
+
+    foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
+                            config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
+
+        
+    plate_recess = cq.Sketch()
+    plate_recess = plate_recess.push(list(kp.values()))
+    plate_recess = (plate_recess.rect(foot_x+(config.caseGap+config.wallThickness)*2, 
+                      foot_y+(config.caseGap+config.wallThickness)*2)
+                    .faces()
+                    .clean()
+                    .offset(config.wallThickness)
+                    .clean())
+            
+        
+    basic_shape= (cq.Workplane()
+           .placeSketch(plate_recess)
+           .extrude(config.caseHeight))
+    return basic_shape
 
 def make_case(config:Config) -> cq.Sketch:
     """TODO: add screw holes for microcontroller (check they are in right position!!)
             make separate floor thickness
             change fillet parameters
             add module for leds, encoder and aviator
-            add screw holes"""
+            """
     
     # remove hard coding and put into Config!
     controller_y_offset = 5
     controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
     controllerBoxWidth=config.controller.board_dimension_x + 5
+        
     
-    kp = get_key_positions(config)
-    x_centre = 0.5*(min([x[0] for x in list(kp.values())])+ max([x[0] for x in list(kp.values())]))
-    
-    foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
-                          config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
-    case = cq.Sketch()
+    case= get_basic_shape(config)
+    case.faces('<Z').tag('bottomface')
 
-    case = case.push(list(kp.values()))
-    
-    
-    case = (case.rect(foot_x+(config.caseGap+config.wallThickness)*2, 
-                      foot_y+(config.caseGap+config.wallThickness)*2)
-            .faces()
-            .clean()
-            .offset(config.wallThickness)
-            .clean())
-    
-    
-    case= (cq.Workplane()
-           .placeSketch(case)
-           .extrude(config.caseHeight))
-    
     # add box for microcontroller
     case = (case
              .edges('>Y and <Z')
@@ -63,12 +66,21 @@ def make_case(config:Config) -> cq.Sketch:
             .shell(-config.wallThickness, kind='intersection')
             )
     
+    # set floor thickness 
+    btm = case.faces('<Z[1]').clean().wires().toPending()
+    case_without_btm=(btm.extrude(config.wallThickness, combine="cut"))
+    new_btm = case.faces('<Z[1]').clean().wires().toPending().extrude(-config.floorThickness, combine=False).translate([0,0,-config.wallThickness])
+    case = case_without_btm.union(new_btm)
     
-    #fillet top edge
-    case = case.edges(tag='outerTopEdge').fillet(config.wallThickness*0.5)
-
     #fillet bottom edge
     case = case.edges('<Z').fillet(3)
+
+    # add plate screw holes 
+    scr_hls = get_screw_positions(config)
+    case=(case.faces('<Z').workplane(origin=(0,0))
+          .pushPoints([(x,-y) for x,y in scr_hls])
+          .cskHole(2.4, 4.8, 82, depth=None)    
+          )
 
     # add controllerbox holes.
     # TODO - remove hardcoding on screw hole size
