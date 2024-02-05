@@ -25,25 +25,30 @@ class Config:
     edgeFillet: float
         
     controller : Controller
+
+    aviatorConnectorHoleDia : float
+    aviatorConnectorFlatWidth : float
         
     def __init__(self, row_key_num, 
-                 cs=19, rs=19, 
-                 switchHoleSize=13.9,
+                 cs = 19, rs = 19, 
+                 switchHoleSize = 13.9,
                  plateThickness = 2,
-                 shape=Shape.LEAN,
-                 screwHoleDiamater= 2.4,
-                 notched_keyhole=True,
-                 plateFillet=2.5,
+                 shape = Shape.LEAN,
+                 screwHoleDiamater = 2.4,
+                 notched_keyhole = True,
+                 plateFillet = 2.5,
                  
-                 caseHeight=22,
-                 caseGap=1.5,
-                 wallThickness=1.6,
-                 floorThickness=2.6,
+                 caseHeight = 22,
+                 caseGap = 1.5,
+                 wallThickness = 1.6,
+                 floorThickness = 3.0,
 
                  edgeFillet = 3,
                  
-                 
-                 controller=AdafruitFeathernRF52840Express()
+                 controller = AdafruitFeathernRF52840Express(),
+
+                 aviatorConnectorHoleDia = 6.25,
+                 aviatorConnectorFlatWidth = 5.3,
                  
                 ):
         self.nrows = len(row_key_num)
@@ -53,7 +58,7 @@ class Config:
         self.plateThickness = plateThickness
         self.screwHoleDiamater = screwHoleDiamater
         self.angle = 0
-        self.hOffset=0
+        self.hOffset = 0
         self.switchHoleSize = switchHoleSize
         self.shape = shape
         self.notched_keyhole = notched_keyhole
@@ -67,3 +72,6 @@ class Config:
         self.edgeFillet = edgeFillet
         
         self.controller = controller  
+
+        self.aviatorConnectorHoleDia = aviatorConnectorHoleDia
+        self.aviatorConnectorFlatWidth = aviatorConnectorFlatWidth

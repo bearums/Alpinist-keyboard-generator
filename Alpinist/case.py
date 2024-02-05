@@ -44,6 +44,22 @@ def add_microcontrollerbox(case, config):
                 )
         return case 
 
+def cut_aviator_connector_hole(case, config):
+
+    aviator_hole_dia = config.aviatorConnectorHoleDia
+    aviator_flat_width = config.aviatorConnectorFlatWidth
+    aviator_hole_height =  1
+
+    case = (case.faces("<Y").workplane(centerOption='CenterOfBoundBox')
+                    .center(0,aviator_hole_height)
+                    .moveTo(-0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
+                    .threePointArc((0, -0.5*aviator_hole_dia), (0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
+                    .lineTo(0.5*aviator_flat_width,((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
+                    .threePointArc((0, 0.5*aviator_hole_dia), (-0.5*aviator_flat_width, ((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
+                    .close().cutBlind(until='next')
+                    )
+    return case 
+
 def make_case(config:Config) -> cq.Sketch:
     """TODO: add screw holes for microcontroller (check they are in right position!!)
             change fillet parameters
@@ -92,7 +108,9 @@ def make_case(config:Config) -> cq.Sketch:
                 .vertices()
                 .cskHole(2.4, 4.8, 82, depth=None))
     
-    
+    #cut hole for aviator connector 
+    case = cut_aviator_connector_hole(case, config)
+
     return case
 
 
