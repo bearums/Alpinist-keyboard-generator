@@ -27,7 +27,7 @@ def get_basic_shape(config:Config) -> cq.Sketch:
            .extrude(config.caseHeight))
     return basic_shape
 
-def add_microcontrollerbox(case, config):
+def add_microcontrollerbox_(case, config):
     # remove hard coding and put into Config!
         controller_y_offset = 5
         controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
@@ -40,9 +40,26 @@ def add_microcontrollerbox(case, config):
                 .faces('<Z')
                 .workplane(centerOption="CenterOfBoundBox")
                 .tag("controllerBox")
+                #.faces('>Z').workplane(centerOption="CenterOfBoundBox").tag("controllerBoxTop")
                 .union(case)
                 )
         return case 
+def add_microcontrollerbox(case, config):
+        controller_y_offset = 5
+        controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
+        controllerBoxWidth=config.controller.board_dimension_x + 5
+        
+        ctrBox = (case
+                .edges('>Y and <Z')
+                .workplane(centerOption="CenterOfBoundBox", invert=False)
+                .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
+                )
+        ctrBox.faces('<Z').tag("controllerBox")
+        ctrBox.faces('>Z').tag("controllerBoxTop")
+
+        case = case.union(ctrBox)
+        return case
+
 
 def cut_aviator_connector_hole(case, config):
 
@@ -50,7 +67,7 @@ def cut_aviator_connector_hole(case, config):
     aviator_flat_width = config.aviatorConnectorFlatWidth
     aviator_hole_height =  1
 
-    case = (case.faces("<Y").workplane(centerOption='CenterOfBoundBox')
+    case = (case.faces(">Y").workplane(centerOption='CenterOfBoundBox')
                     .center(0,aviator_hole_height)
                     .moveTo(-0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
                     .threePointArc((0, -0.5*aviator_hole_dia), (0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))

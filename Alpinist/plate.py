@@ -23,7 +23,7 @@ def get_key_hole_shape(config) -> cq.Sketch:
 def get_key_positions(config: Config) -> [(float, float)]:
     kp={}
     x_centre = max(config.row_key_num)* config.rowSpacing*0.5
-    for col_num, row_size in enumerate(reversed(config.row_key_num)):
+    for col_num, row_size in enumerate((config.row_key_num)):
         centre = row_size* config.rowSpacing*0.5
 
         if centre != x_centre:
