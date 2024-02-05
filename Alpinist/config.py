@@ -42,6 +42,7 @@ class Config:
 
                  edgeFillet = 3,
                  
+                 
                  controller=AdafruitFeathernRF52840Express()
                  
                 ):
@@ -63,6 +64,6 @@ class Config:
         self.wallThickness = wallThickness
         self.floorThickness = floorThickness
 
-        self.edgeFillet = 3
+        self.edgeFillet = edgeFillet
         
         self.controller = controller  

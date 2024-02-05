@@ -27,52 +27,53 @@ def get_basic_shape(config:Config) -> cq.Sketch:
            .extrude(config.caseHeight))
     return basic_shape
 
+def add_microcontrollerbox(case, config):
+    # remove hard coding and put into Config!
+        controller_y_offset = 5
+        controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
+        controllerBoxWidth=config.controller.board_dimension_x + 5
+        
+        case = (case
+                .edges('>Y and <Z')
+                .workplane(centerOption="CenterOfBoundBox", invert=False)
+                .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
+                .faces('<Z')
+                .workplane(centerOption="CenterOfBoundBox")
+                .tag("controllerBox")
+                .union(case)
+                )
+        return case 
+
 def make_case(config:Config) -> cq.Sketch:
     """TODO: add screw holes for microcontroller (check they are in right position!!)
             change fillet parameters
             add module for leds, encoder and aviator
             """
     
-    # remove hard coding and put into Config!
-    controller_y_offset = 5
-    controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
-    controllerBoxWidth=config.controller.board_dimension_x + 5
-        
     
     case= get_basic_shape(config)
-    case.faces('<Z').tag('bottomface')
+    #case.faces('<Z').tag('bottomface')
 
     # add box for microcontroller
-    case = (case
-             .edges('>Y and <Z')
-             .workplane(centerOption="CenterOfBoundBox", invert=False)
-             .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
-             .faces('<Z')
-            .workplane(centerOption="CenterOfBoundBox")
-            .tag("controllerBox")
-            .union(case)
-            )
+    if config.controller is not None:
+        case = add_microcontrollerbox(case, config)
     
 
     #fillet edges
-    case = case.edges('|Z').fillet(3)
-
-    case.edges('>Z').tag('outerTopEdge')
+    case = case.edges('|Z').fillet(config.edgeFillet)
+    #case.edges('>Z').tag('outerTopEdge')
 
 
     # scoop out interior
-    case= (case.faces(">Z")
-            .shell(-config.wallThickness, kind='intersection')
-            )
+    case= (case.faces(">Z or <Z").shell(-config.wallThickness, kind='intersection'))
     
     # set floor thickness 
-    btm = case.faces('<Z[1]').clean().wires().toPending()
-    case_without_btm=(btm.extrude(config.wallThickness, combine="cut"))
-    new_btm = case.faces('<Z[1]').clean().wires().toPending().extrude(-config.floorThickness, combine=False).translate([0,0,-config.wallThickness])
-    case = case_without_btm.union(new_btm)
+    case = case.faces('<Z').wires('>X and >Y').toPending().extrude(config.floorThickness)
     
     #fillet bottom edge
     case = case.edges('<Z').fillet(3)
+
+
 
     # add plate screw holes 
     scr_hls = get_screw_positions(config)
@@ -83,16 +84,16 @@ def make_case(config:Config) -> cq.Sketch:
 
     # add controllerbox holes.
     # TODO - remove hardcoding on screw hole size
-    case = (case.workplaneFromTagged("controllerBox")
-            .rect(config.controller.screw_hole_x,
-                   config.controller.screw_hole_y- config.wallThickness - controller_y_offset - (config.controller.board_dimension_y -config.controller.screw_hole_y)*0.5, 
-                   forConstruction=True ,centered=[True,True,True])
-            .vertices()
-            .cskHole(2.4, 4.8, 82, depth=None))
+    if config.controller is not None:
+        case = (case.workplaneFromTagged("controllerBox")
+                .rect(config.controller.screw_hole_x,
+                        config.controller.screw_hole_y- config.wallThickness - controller_y_offset - (config.controller.board_dimension_y -config.controller.screw_hole_y)*0.5, 
+                        forConstruction=True ,centered=[True,True,True])
+                .vertices()
+                .cskHole(2.4, 4.8, 82, depth=None))
     
     
     return case
-
 
 
 
