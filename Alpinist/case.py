@@ -45,7 +45,7 @@ def add_microcontrollerbox_(case, config):
                 )
         return case 
 def add_microcontrollerbox(case, config):
-        controller_y_offset = 5
+        controller_y_offset = config.controllerYOffset
         controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
         controllerBoxWidth=config.controller.board_dimension_x + 5
         
@@ -60,7 +60,7 @@ def add_microcontrollerbox(case, config):
         case = case.union(ctrBox)
         return case
 
-def make_controller_box_top_plate(case):
+def make_controller_box_top_plate(case,config):
 
     controllerBoxLength =  get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<X'))['y']
     controllerBoxWidth = get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<Y'))['x']
