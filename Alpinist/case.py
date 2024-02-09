@@ -60,6 +60,20 @@ def add_microcontrollerbox(case, config):
         case = case.union(ctrBox)
         return case
 
+def make_controller_box_top_plate(case):
+
+    controllerBoxLength =  get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<X'))['y']
+    controllerBoxWidth = get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<Y'))['x']
+
+    controller_box_top = (case
+                        .faces(tag='controllerBoxTop')
+                        .workplane(centerOption="CenterOfBoundBox", invert=True)
+                        .move(0,config.wallThickness)
+                        .box(controllerBoxWidth,controllerBoxLength, config.controllerBoxThickness, centered=[True,True,False],combine=False)
+    )
+
+
+    return controller_box_top
 
 def cut_aviator_connector_hole(case, config):
 
@@ -130,6 +144,16 @@ def make_case(config:Config) -> cq.Sketch:
 
     return case
 
+def get_distance_between_two_vertices(vertices):
+    """calculates distances in each axis between two vertices:
+    eg: get_distance_between_two_vertices(OBJECT.vertices('<Y'))"""
+    assert len(vertices.vals())==2, "Must have only 2 vertices! %s, vertices selected"%(len(vertices.vals()))
+
+    vals = [x.Center().toTuple() for x in vertices.vals()]
+    distance = {'x': abs(vals[0][0]- vals[1][0]),
+                'y': abs(vals[0][1]- vals[1][1]),
+                'z': abs(vals[0][2]- vals[1][2])}
+    return distance
 
 
 if __name__ =="__main__":

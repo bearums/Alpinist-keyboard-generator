@@ -25,6 +25,8 @@ class Config:
     edgeFillet: float
         
     controller : Controller
+    controllerYOffset : float
+    controllerBoxThickness : float
 
     aviatorConnectorHoleDia : float
     aviatorConnectorFlatWidth : float
@@ -46,6 +48,8 @@ class Config:
                  edgeFillet = 3,
                  
                  controller = AdafruitFeathernRF52840Express(),
+                 controllerYOffset = 5,
+                 controllerBoxThickness = 2,
 
                  aviatorConnectorHoleDia = 6.25,
                  aviatorConnectorFlatWidth = 5.3,
@@ -72,6 +76,8 @@ class Config:
         self.edgeFillet = edgeFillet
         
         self.controller = controller  
+        self.controllerYOffset = controllerYOffset
+        self.controllerBoxThickness = controllerBoxThickness
 
         self.aviatorConnectorHoleDia = aviatorConnectorHoleDia
         self.aviatorConnectorFlatWidth = aviatorConnectorFlatWidth
