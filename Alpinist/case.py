@@ -56,6 +56,7 @@ def add_microcontrollerbox(case, config):
                 )
         ctrBox.faces('<Z').tag("controllerBox")
         ctrBox.faces('>Z').tag("controllerBoxTop")
+        ctrBox.vertices('>Z').tag('boxCorners')
 
         case = case.union(ctrBox)
         return case
