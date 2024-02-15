@@ -25,6 +25,9 @@ def get_basic_shape(config:Config) -> cq.Sketch:
     basic_shape= (cq.Workplane()
            .placeSketch(plate_recess)
            .extrude(config.caseHeight))
+    basic_shape.edges('>Y').tag('topEdge')
+    if config.controller is not None:
+        basic_shape = add_microcontrollerbox(basic_shape, config)
     return basic_shape
 
 def add_microcontrollerbox_(case, config):
