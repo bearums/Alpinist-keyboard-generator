@@ -42,7 +42,7 @@ class Config:
                  plateFillet = 2.5,
                  
                  caseHeight = 22,
-                 caseGap = 1.5,
+                 caseGap = 0.,
                  wallThickness = 1.6,
                  floorThickness = 3.0,
                  edgeFillet = 4,
