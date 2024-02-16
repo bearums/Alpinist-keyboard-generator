@@ -44,6 +44,16 @@ def load_controller_from_dict( dict):
         screw_hole_y = dict['screw_hole_y']
         
         return Controller(**dict)
+
+
+class ControllerFromDict(Controller, dict):
+    name = dict['name']
+    screw_hole_x = dict['screw_hole_x']
+    screw_hole_y = dict['screw_hole_y']
+    board_dimension_x = dict['board_dimension_x']
+    board_dimension_y = dict['board_dimension_y']
+    pass
+
 class PiPico(Controller):
     name = "Pi Pico"
 

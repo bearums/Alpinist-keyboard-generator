@@ -4,4 +4,4 @@
 - add LED holes into top cover 
 - test the case Gap between the case and the plate, doesn't seem to work correctly now
 - load in configs from json to make examples
-  - load in controller type correctly: use dict = {'piPico':piPico()}
+  - load in controller type correctly: use dict = {'piPico':piPico()}, or dump controller properties to dict and load back in
