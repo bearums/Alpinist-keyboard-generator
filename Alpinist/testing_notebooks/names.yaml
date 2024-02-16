@@ -1,0 +1,26 @@
+angle: 0
+aviatorConnectorFlatWidth: 5.3
+aviatorConnectorHoleDia: 6.25
+bottomFillet: 2
+caseGap: 1.0
+caseHeight: 22
+columnSpacing: 19
+controller: null
+controllerBoxThickness: 2
+controllerYOffset: 5
+edgeFillet: 4
+floorThickness: 3.0
+hOffset: 0
+notched_keyhole: true
+nrows: 3
+plateThickness: 2
+rowSpacing: 19
+row_key_num:
+- 5
+- 5
+- 5
+screwHoleDiamater: 2.4
+shape: !!python/object/apply:config.Shape
+- 0
+switchHoleSize: 13.9
+wallThickness: 1.6

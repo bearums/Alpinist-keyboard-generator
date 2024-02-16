@@ -1,0 +1,26 @@
+{
+    "row_key_numbers": [
+        7,
+        10,
+        10,
+        10
+    ],
+    "columnSpacing": 19,
+    "rowSpacing": 19,
+    "plateThickness": 2,
+    "screwHoleDiamater": 2.4,
+    "switchHoleSize": 13.9,
+    "shape": 0,
+    "notched_keyhole": true,
+    "caseHeight": 22,
+    "caseGap": 1.0,
+    "wallThickness": 1.6,
+    "floorThickness": 3.0,
+    "edgeFillet": 4,
+    "bottomFillet": 2,
+    "controller": "None",
+    "controllerYOffset": 5,
+    "controllerBoxThickness": 2,
+    "aviatorConnectorHoleDia": 6.25,
+    "aviatorConnectorFlatWidth": 5.3
+}

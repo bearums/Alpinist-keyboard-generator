@@ -1,3 +1,4 @@
+import json
 from enum import IntEnum
 from controller import Controller
 from controller import AdafruitFeathernRF52840Express
@@ -7,8 +8,8 @@ class Shape(IntEnum):
     HULL = 1
     
 class Config:
-    nrows : int
-    row_key_num: list
+    #nrows : int
+    row_key_numbers: list
     columnSpacing: float
     rowSpacing: float
     switchHoleSize: float
@@ -32,8 +33,8 @@ class Config:
     aviatorConnectorHoleDia : float
     aviatorConnectorFlatWidth : float
         
-    def __init__(self, row_key_num, 
-                 cs = 19, rs = 19, 
+    def __init__(self, row_key_numbers, 
+                 columnSpacing = 19, rowSpacing = 19, 
                  switchHoleSize = 13.9,
                  plateThickness = 2,
                  shape = Shape.LEAN,
@@ -56,14 +57,14 @@ class Config:
                  aviatorConnectorFlatWidth = 5.3,
                  
                 ):
-        self.nrows = len(row_key_num)
-        self.row_key_num = row_key_num
-        self.columnSpacing = cs
-        self.rowSpacing = rs
+        #self.nrows = len(row_key_numbers)
+        self.row_key_numbers = row_key_numbers
+        self.columnSpacing = columnSpacing
+        self.rowSpacing = rowSpacing
         self.plateThickness = plateThickness
         self.screwHoleDiamater = screwHoleDiamater
-        self.angle = 0
-        self.hOffset = 0
+        #self.angle = 0
+        #self.hOffset = 0
         self.switchHoleSize = switchHoleSize
         self.shape = shape
         self.notched_keyhole = notched_keyhole
@@ -82,3 +83,20 @@ class Config:
 
         self.aviatorConnectorHoleDia = aviatorConnectorHoleDia
         self.aviatorConnectorFlatWidth = aviatorConnectorFlatWidth
+
+    def to_json(self, file):
+        dict_to_write = self.__dict__.copy()
+        if self.controller is not None:
+            dict_to_write['controller'] = self.controller.__class__.__name__
+        else:
+             dict_to_write['controller'] = 'None'
+        with open(file, 'w') as f:
+            json.dump(dict_to_write, f, indent=4 )
+    
+def read_json( file):
+        with open(file, 'r') as f:
+            dict= json.load(f)
+
+        if dict['controller'] == 'None':
+             dict['controller'] = None
+        return Config(**dict)
