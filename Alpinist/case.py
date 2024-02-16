@@ -1,8 +1,23 @@
 import cadquery as cq
+from cadquery import Selector
+from cadquery.occ_impl.geom import Vector
+
 from enum import IntEnum
 
 from plate import Config, Shape
 from plate import make_plate, get_key_positions, get_screw_positions
+
+class CustomisableSelector(Selector):
+    """A Cadquery selector that allows the filter to be directly set. 
+    
+    Eg. def someFilterFunction(objectList):
+            return objectList[1:]
+
+        mySelector = CustomisableSelector()
+        mySelector.set_filter(someFilterFunction)"""
+    def set_filter(self, filter_function):
+        self.filter = filter_function
+
 
 def get_basic_shape(config:Config) -> cq.Sketch:
 
@@ -28,25 +43,14 @@ def get_basic_shape(config:Config) -> cq.Sketch:
     basic_shape.edges('>Y').tag('topEdge')
     if config.controller is not None:
         basic_shape = add_microcontrollerbox(basic_shape, config)
+
+    #fillet edges
+    basic_shape = basic_shape.edges('|Z').fillet(config.edgeFillet)
+    basic_shape.edges('>Z').tag('outerTopEdge') # for making controller box top plate
+
     return basic_shape
 
-def add_microcontrollerbox_(case, config):
-    # remove hard coding and put into Config!
-        controller_y_offset = 5
-        controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
-        controllerBoxWidth=config.controller.board_dimension_x + 5
-        
-        case = (case
-                .edges('>Y and <Z')
-                .workplane(centerOption="CenterOfBoundBox", invert=False)
-                .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
-                .faces('<Z')
-                .workplane(centerOption="CenterOfBoundBox")
-                .tag("controllerBox")
-                #.faces('>Z').workplane(centerOption="CenterOfBoundBox").tag("controllerBoxTop")
-                .union(case)
-                )
-        return case 
+
 def add_microcontrollerbox(case, config):
         controller_y_offset = config.controllerYOffset
         controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
@@ -58,26 +62,40 @@ def add_microcontrollerbox(case, config):
                 .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
                 )
         ctrBox.faces('<Z').tag("controllerBox")
-        ctrBox.faces('>Z').tag("controllerBoxTop")
-        ctrBox.vertices('>Z').tag('boxCorners')
 
         case = case.union(ctrBox)
         return case
 
-def make_controller_box_top_plate(case,config):
+def make_controller_box_top_plate(config,topPlateThickness=1):
+        bs = get_basic_shape(config)
 
-    controllerBoxLength =  get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<X'))['y']
-    controllerBoxWidth = get_distance_between_two_vertices(case.faces(tag='controllerBoxTop').vertices('<Y'))['x']
+        def filter_func(objectList):
+                r = []
+                for o in objectList:
+                        if o.Center().y > bs.edges(tag='topEdge').val().Center().y  :
+                                r.append(o)
+                return r
+        
+        controllerBoxEdgeSelector = CustomisableSelector()
+        controllerBoxEdgeSelector.set_filter(filter_func)
 
-    controller_box_top = (case
-                        .faces(tag='controllerBoxTop')
-                        .workplane(centerOption="CenterOfBoundBox", invert=True)
-                        .move(0,config.wallThickness)
-                        .box(controllerBoxWidth,controllerBoxLength, config.controllerBoxThickness, centered=[True,True,False],combine=False)
-    )
+        edges = bs.edges(tag='outerTopEdge').edges(controllerBoxEdgeSelector).toPending()
+
+        # get coordinated of vertices on microcontroller box 
+        xs = [v.toTuple()[0] for v in edges.vertices().vals()]
+        ys = [v.toTuple()[1] for v in edges.vertices().vals()]
+        zs = [v.toTuple()[2] for v in edges.vertices().vals()]
+        assert len(set(zs)) <= 1 # check that points are all in Z plane
 
 
-    return controller_box_top
+        firstPoint = Vector(max(xs), min(ys), zs[0])
+        lastPoint = Vector(min(xs), min(ys), zs[0])
+
+        edges.add(edges.polyline([ firstPoint, lastPoint])) # draw bottom line
+
+
+        controller_box_top = edges.wire().extrude(-topPlateThickness, combine=False)
+        return controller_box_top
 
 def cut_aviator_connector_hole(case, config):
 
@@ -103,20 +121,12 @@ def make_case(config:Config) -> cq.Sketch:
     
     
     case= get_basic_shape(config)
-    #case.faces('<Z').tag('bottomface')
+   
 
-    # add box for microcontroller
-    if config.controller is not None:
-        case = add_microcontrollerbox(case, config)
+
     
-
-    #fillet edges
-    case = case.edges('|Z').fillet(config.edgeFillet)
-    #case.edges('>Z').tag('outerTopEdge')
-
-
     # scoop out interior
-    case= (case.faces(">Z or <Z").shell(-config.wallThickness, kind='intersection'))
+    case= (case.faces(">Z or <Z").shell(config.wallThickness, kind='intersection'))
     
     # set floor thickness 
     case = case.faces('<Z').wires('>X and >Y').toPending().extrude(config.floorThickness)
@@ -133,18 +143,20 @@ def make_case(config:Config) -> cq.Sketch:
           .cskHole(2.4, 4.8, 82, depth=None)    
           )
 
-    # add controllerbox holes.
-    # TODO - remove hardcoding on screw hole size
-    if config.controller is not None:
-        case = (case.workplaneFromTagged("controllerBox")
-                .rect(config.controller.screw_hole_x,
-                        config.controller.screw_hole_y- config.wallThickness - controller_y_offset - (config.controller.board_dimension_y -config.controller.screw_hole_y)*0.5, 
-                        forConstruction=True ,centered=[True,True,True])
-                .vertices()
-                .cskHole(2.4, 4.8, 82, depth=None))
     
     #cut hole for aviator connector 
     case = cut_aviator_connector_hole(case, config)
+
+    # add controllerbox holes.
+    # TODO - remove hardcoding on screw hole size
+    # if config.controller is not None:
+    #     case = (case.workplaneFromTagged("controllerBox")
+    #             .rect(config.controller.screw_hole_x,
+    #                     config.controller.screw_hole_y- config.wallThickness - config.controllerYOffset - (config.controller.board_dimension_y -config.controller.screw_hole_y)*0.5, 
+    #                     forConstruction=True ,centered=[True,True,True])
+    #             .vertices()
+    #             .cskHole(2.4, 4.8, 82, depth=None))
+    
 
     return case
 
