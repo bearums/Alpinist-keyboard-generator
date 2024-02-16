@@ -3,9 +3,7 @@ from config import Config, Shape
 
 
 def get_keys(kp, key_shape, config):
-    return cq.Workplane().pushPoints(kp.values()).placeSketch(key_shape).extrude(config.plateThickness)\
-        .rotate((0, 0, 0), (0, 0, 1), config.angle).translate(
-        (config.hOffset, 0))
+    return cq.Workplane().pushPoints(kp.values()).placeSketch(key_shape).extrude(config.plateThickness)
 
 
 
@@ -22,8 +20,8 @@ def get_key_hole_shape(config) -> cq.Sketch:
 
 def get_key_positions(config: Config) -> [(float, float)]:
     kp={}
-    x_centre = max(config.row_key_num)* config.rowSpacing*0.5
-    for col_num, row_size in enumerate((config.row_key_num)):
+    x_centre = max(config.row_key_numbers)* config.rowSpacing*0.5
+    for col_num, row_size in enumerate((config.row_key_numbers)):
         centre = row_size* config.rowSpacing*0.5
 
         if centre != x_centre:
@@ -40,9 +38,10 @@ def get_key_positions(config: Config) -> [(float, float)]:
 
 def get_screw_positions(config: Config) -> [(float, float)]:
     sp=[]
-    x_centre = max(config.row_key_num)* config.rowSpacing*0.5
-    row_holes = list(reversed( [config.row_key_num[0]]+ config.row_key_num)) 
-    for col_num in range(0, config.nrows+1,2):    
+    x_centre = max(config.row_key_numbers)* config.rowSpacing*0.5
+    row_holes = list(reversed( [config.row_key_numbers[0]]+ config.row_key_numbers)) 
+    nrows = len(config.row_key_numbers)
+    for col_num in range(0,nrows+1,2):    
         row_size = row_holes[col_num]
         centre = row_size* config.rowSpacing*0.5
 
