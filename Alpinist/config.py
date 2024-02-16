@@ -16,7 +16,7 @@ class Config:
     shape: Shape
     screwHoleDiameter: float
     notched_keyhole: bool
-    plateFillet: float
+    
         
     caseHeight: float
     caseGap: float
@@ -39,10 +39,10 @@ class Config:
                  shape = Shape.LEAN,
                  screwHoleDiamater = 2.4,
                  notched_keyhole = True,
-                 plateFillet = 2.5,
+                 
                  
                  caseHeight = 22,
-                 caseGap = 0.,
+                 caseGap = 1.0,
                  wallThickness = 1.6,
                  floorThickness = 3.0,
                  edgeFillet = 4,
@@ -67,7 +67,7 @@ class Config:
         self.switchHoleSize = switchHoleSize
         self.shape = shape
         self.notched_keyhole = notched_keyhole
-        self.plateFillet = plateFillet
+        
         
         self.caseHeight = caseHeight
         self.caseGap = caseGap

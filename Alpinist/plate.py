@@ -64,7 +64,7 @@ def get_screw_positions(config: Config) -> [(float, float)]:
         
     return sp
 
-def get_base(config: Config, kp, thickness,base_fillet=2.5, window=False):
+def get_base(config: Config, kp, thickness,base_fillet, window=False):
 
     foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
                       config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
@@ -98,7 +98,7 @@ def get_base(config: Config, kp, thickness,base_fillet=2.5, window=False):
 def make_plate(config:Config, holes=True) -> cq.Sketch:
     key_hole_shape = get_key_hole_shape(config)
     kp = get_key_positions(config)
-    plate = get_base(config, kp, thickness=config.plateThickness, base_fillet=config.plateFillet, window=False).cut(get_keys(kp, key_hole_shape, config))
+    plate = get_base(config, kp, thickness=config.plateThickness, base_fillet=config.edgeFillet, window=False).cut(get_keys(kp, key_hole_shape, config))
     hole_psns= get_screw_positions(config)
     if holes:
         plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)

@@ -29,11 +29,11 @@ def get_basic_shape(config:Config) -> cq.Sketch:
         
     plate_recess = cq.Sketch()
     plate_recess = plate_recess.push(list(kp.values()))
-    plate_recess = (plate_recess.rect(foot_x+(config.caseGap+config.wallThickness)*2, 
-                      foot_y+(config.caseGap+config.wallThickness)*2)
+    plate_recess = (plate_recess.rect(foot_x+(config.caseGap)*2, 
+                      foot_y+(config.caseGap)*2)
                     .faces()
                     .clean()
-                    .offset(config.wallThickness)
+                    #.offset(config.wallThickness)
                     .clean())
             
         
