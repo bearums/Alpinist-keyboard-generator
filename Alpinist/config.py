@@ -23,6 +23,7 @@ class Config:
     wallThickness: float
     floorThickness: float
     edgeFillet: float
+    bottomFillet: float
         
     controller : Controller
     controllerYOffset : float
@@ -44,8 +45,8 @@ class Config:
                  caseGap = 1.5,
                  wallThickness = 1.6,
                  floorThickness = 3.0,
-
-                 edgeFillet = 3,
+                 edgeFillet = 4,
+                 bottomFillet = 2,
                  
                  controller = AdafruitFeathernRF52840Express(),
                  controllerYOffset = 5,
@@ -72,8 +73,8 @@ class Config:
         self.caseGap = caseGap
         self.wallThickness = wallThickness
         self.floorThickness = floorThickness
-
         self.edgeFillet = edgeFillet
+        self.bottomFillet = bottomFillet
         
         self.controller = controller  
         self.controllerYOffset = controllerYOffset

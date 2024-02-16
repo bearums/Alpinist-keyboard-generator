@@ -132,7 +132,7 @@ def make_case(config:Config) -> cq.Sketch:
     case = case.faces('<Z').wires('>X and >Y').toPending().extrude(config.floorThickness)
     
     #fillet bottom edge
-    case = case.edges('<Z').fillet(3)
+    case = case.edges('<Z').fillet(config.bottomFillet)
 
 
 
