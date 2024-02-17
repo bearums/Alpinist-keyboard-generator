@@ -1,6 +1,6 @@
 import json
 from enum import IntEnum
-from controller import Controller
+from controller import Controller, ControllerFromDict
 from controller import AdafruitFeathernRF52840Express
 
 class Shape(IntEnum):
@@ -8,7 +8,6 @@ class Shape(IntEnum):
     HULL = 1
     
 class Config:
-    #nrows : int
     row_key_numbers: list
     columnSpacing: float
     rowSpacing: float
@@ -57,14 +56,11 @@ class Config:
                  aviatorConnectorFlatWidth = 5.3,
                  
                 ):
-        #self.nrows = len(row_key_numbers)
         self.row_key_numbers = row_key_numbers
         self.columnSpacing = columnSpacing
         self.rowSpacing = rowSpacing
         self.plateThickness = plateThickness
         self.screwHoleDiamater = screwHoleDiamater
-        #self.angle = 0
-        #self.hOffset = 0
         self.switchHoleSize = switchHoleSize
         self.shape = shape
         self.notched_keyhole = notched_keyhole
@@ -87,16 +83,20 @@ class Config:
     def to_json(self, file):
         dict_to_write = self.__dict__.copy()
         if self.controller is not None:
-            dict_to_write['controller'] = self.controller.__class__.__name__
+            dict_to_write['controller'] = self.controller.as_dict()
         else:
              dict_to_write['controller'] = 'None'
         with open(file, 'w') as f:
             json.dump(dict_to_write, f, indent=4 )
     
-def read_json( file):
+    
+def read_config_from_json( file):
         with open(file, 'r') as f:
             dict= json.load(f)
 
         if dict['controller'] == 'None':
-             dict['controller'] = None
-        return Config(**dict)
+            dict['controller'] = None
+        else:
+            dict['controller']  = ControllerFromDict(dict['controller'] )
+        return Config(dict)
+

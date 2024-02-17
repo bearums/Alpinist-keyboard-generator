@@ -18,7 +18,13 @@
     "floorThickness": 3.0,
     "edgeFillet": 4,
     "bottomFillet": 2,
-    "controller": "AdafruitFeathernRF52840Express",
+    "controller": {
+        "name": "AdafruitFeathernRF52840Express",
+        "board_dimension_x": 51.0,
+        "board_dimension_y": 23.0,
+        "screw_hole_x": 45.72,
+        "screw_hole_y": 17.78
+    },
     "controllerYOffset": 5,
     "controllerBoxThickness": 2,
     "aviatorConnectorHoleDia": 6.25,
