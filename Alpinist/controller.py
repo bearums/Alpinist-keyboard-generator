@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
+
+#TODO
+# add docstrings to properties
 class Controller(ABC):
     
     @property
@@ -38,21 +42,30 @@ class Controller(ABC):
         info_dict = self.as_dict()
         return str(info_dict)
     
-def load_controller_from_dict( dict):
-        name = dict['name']
-        screw_hole_x = dict['screw_hole_x']
-        screw_hole_y = dict['screw_hole_y']
-        
-        return Controller(**dict)
 
 
-class ControllerFromDict(Controller, dict):
-    name = dict['name']
-    screw_hole_x = dict['screw_hole_x']
-    screw_hole_y = dict['screw_hole_y']
-    board_dimension_x = dict['board_dimension_x']
-    board_dimension_y = dict['board_dimension_y']
-    pass
+
+@dataclass
+class ControllerFromDict(Controller):
+    
+    dict : dict 
+
+    board_dimension_x: float = None
+    board_dimension_y : float = None
+    screw_hole_x : float = None
+    screw_hole_y : float = None
+    
+    def __post_init__(self):
+        self.name : str =  self.dict['name']
+        self.board_dimension_x: float = self.dict['board_dimension_x']
+        self.board_dimension_y: float = self.dict['board_dimension_y']
+        self.screw_hole_x: float = self.dict['screw_hole_x']
+        self.screw_hole_y: float = self.dict['screw_hole_y']
+
+
+
+
+
 
 class PiPico(Controller):
     name = "Pi Pico"
