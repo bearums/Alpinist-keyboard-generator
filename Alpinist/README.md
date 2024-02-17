@@ -1,7 +1,8 @@
 # TODO 
 
 - improve screw hole positions, do not put holes so close to case walls
-- add LED holes into top cover 
+- add LED holes into top cover - use interface (hexagonal architecture)
+- add function to cut hole for aviator connector
 - test the case Gap between the case and the plate, doesn't seem to work correctly now
 - load in configs from json to make examples
   - add docstrings to controller and config parameters

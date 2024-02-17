@@ -6,7 +6,8 @@ from controller import AdafruitFeathernRF52840Express
 class Shape(IntEnum):
     LEAN = 0
     HULL = 1
-    
+
+
 class Config:
     row_key_numbers: list
     columnSpacing: float
@@ -89,7 +90,7 @@ class Config:
         with open(file, 'w') as f:
             json.dump(dict_to_write, f, indent=4 )
     
-    
+
 def read_config_from_json( file):
         with open(file, 'r') as f:
             dict= json.load(f)

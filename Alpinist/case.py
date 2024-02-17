@@ -18,7 +18,6 @@ class CustomisableSelector(Selector):
     def set_filter(self, filter_function):
         self.filter = filter_function
 
-
 def get_basic_shape(config:Config) -> cq.Sketch:
 
     kp = get_key_positions(config)
@@ -113,18 +112,16 @@ def cut_aviator_connector_hole(case, config):
                     )
     return case 
 
-def make_case(config:Config) -> cq.Sketch:
-    """TODO: add screw holes for microcontroller (check they are in right position!!)
-            change fillet parameters
-            add module for leds, encoder and aviator
-            """
-    
+def make_case(config:Config, 
+              modify_controller_box:function = None,
+              get_screw_positions:function = get_screw_positions,
+              cut_hole_for_connector:function = None,
+              ) -> cq.Sketch:
+   
     
     case= get_basic_shape(config)
-   
+    case.edges('>Z').tag('outerTopEdge') # for making controller box top plate
 
-
-    
     # scoop out interior
     case= (case.faces(">Z or <Z").shell(config.wallThickness, kind='intersection'))
     
@@ -134,7 +131,6 @@ def make_case(config:Config) -> cq.Sketch:
     #fillet bottom edge
     if config.bottomFillet != 0:
         case = case.edges('<Z').fillet(config.bottomFillet)
-
 
 
     # add plate screw holes 
@@ -158,6 +154,11 @@ def make_case(config:Config) -> cq.Sketch:
     #             .vertices()
     #             .cskHole(2.4, 4.8, 82, depth=None))
     
+
+    top = make_controller_box_top_plate(config, config.controllerBoxThickness)
+    if modify_controller_box is not None:
+        top = modify_controller_box(top)
+    case = case.union(top)
 
     return case
 
