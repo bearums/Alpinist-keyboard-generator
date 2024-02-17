@@ -30,12 +30,10 @@ config_dict = """{
         "board_dimension_x": 51.0,
         "board_dimension_y": 21.0,
         "screw_hole_x": 47.0,
-        "screw_hole_y": 11.1
+        "screw_hole_y": 11.4
     },
     "controllerYOffset": 5,
-    "controllerBoxThickness": 2,
-    "aviatorConnectorHoleDia": 6.25,
-    "aviatorConnectorFlatWidth": 5.3
+    "controllerBoxThickness": 2
 }"""
 
 config = read_config_from_json(string=config_dict)
@@ -70,7 +68,27 @@ def cut_holes_in_top_plate(top):
     )
     return top
 
-case = make_case(config,modify_controller_box=cut_holes_in_top_plate)
+def cut_aviator_connector_hole(case):
+
+    aviator_hole_dia = 6.25
+    aviator_flat_width = 5.3
+    aviator_hole_height =  1
+
+    case = (case.faces(">Y").workplane(centerOption='CenterOfBoundBox')
+                    .center(0,aviator_hole_height)
+                    .moveTo(-0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
+                    .threePointArc((0, -0.5*aviator_hole_dia), (0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
+                    .lineTo(0.5*aviator_flat_width,((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
+                    .threePointArc((0, 0.5*aviator_hole_dia), (-0.5*aviator_flat_width, ((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
+                    .close()
+                    .cutBlind(until='next')
+                    )
+    return case 
+
+
+case = make_case(config,
+                 modify_controller_box=cut_holes_in_top_plate,
+                 cut_hole_for_connector=cut_aviator_connector_hole)
 
 #plate= make_plate(config)
 #assy = cq.Assembly()

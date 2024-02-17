@@ -30,8 +30,7 @@ class Config:
     controllerYOffset : float
     controllerBoxThickness : float
 
-    aviatorConnectorHoleDia : float
-    aviatorConnectorFlatWidth : float
+
         
     def __init__(self, row_key_numbers, 
                  columnSpacing = 19, rowSpacing = 19, 
@@ -53,8 +52,7 @@ class Config:
                  controllerYOffset = 5,
                  controllerBoxThickness = 2,
 
-                 aviatorConnectorHoleDia = 6.25,
-                 aviatorConnectorFlatWidth = 5.3,
+                 
                  
                 ):
         self.row_key_numbers = row_key_numbers
@@ -78,8 +76,7 @@ class Config:
         self.controllerYOffset = controllerYOffset
         self.controllerBoxThickness = controllerBoxThickness
 
-        self.aviatorConnectorHoleDia = aviatorConnectorHoleDia
-        self.aviatorConnectorFlatWidth = aviatorConnectorFlatWidth
+        
 
     def to_json(self, file):
         dict_to_write = self.__dict__.copy()

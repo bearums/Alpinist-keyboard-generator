@@ -2,8 +2,6 @@ import cadquery as cq
 from cadquery import Selector
 from cadquery.occ_impl.geom import Vector
 
-from enum import IntEnum
-
 from plate import Config, Shape
 from plate import make_plate, get_key_positions, get_screw_positions
 
@@ -95,21 +93,7 @@ def make_controller_box_top_plate(config,topPlateThickness=1):
         controller_box_top = edges.wire().extrude(-topPlateThickness, combine=False)
         return controller_box_top
 
-def cut_aviator_connector_hole(case, config):
 
-    aviator_hole_dia = config.aviatorConnectorHoleDia
-    aviator_flat_width = config.aviatorConnectorFlatWidth
-    aviator_hole_height =  1
-
-    case = (case.faces(">Y").workplane(centerOption='CenterOfBoundBox')
-                    .center(0,aviator_hole_height)
-                    .moveTo(-0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
-                    .threePointArc((0, -0.5*aviator_hole_dia), (0.5*aviator_flat_width, -((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
-                    .lineTo(0.5*aviator_flat_width,((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5)
-                    .threePointArc((0, 0.5*aviator_hole_dia), (-0.5*aviator_flat_width, ((0.5*aviator_hole_dia)**2 - (0.5*aviator_flat_width)**2)**0.5))
-                    .close().cutBlind(until='next')
-                    )
-    return case 
 
 def make_case(config:Config, 
               modify_controller_box:callable = None,
@@ -141,7 +125,8 @@ def make_case(config:Config,
 
     
     #cut hole for aviator connector 
-    case = cut_aviator_connector_hole(case, config)
+    if cut_hole_for_connector is not None:
+        case = cut_hole_for_connector(case)
 
     # add controllerbox holes.
     # TODO - remove hardcoding on screw hole size
@@ -153,15 +138,16 @@ def make_case(config:Config,
     #             .vertices()
     #             .cskHole(2.4, 4.8, 82, depth=None))
     
-
-    top = make_controller_box_top_plate(config, config.controllerBoxThickness)
-    if modify_controller_box is not None:
-        top = modify_controller_box(top)
-    case = case.union(top)
+    # make top plate for controller box
+    if config.controller is not None:
+        top = make_controller_box_top_plate(config, config.controllerBoxThickness)
+        if modify_controller_box is not None:
+            top = modify_controller_box(top)
+        case = case.union(top)
 
     return case
 
-    
+
 def get_distance_between_two_shapes(vertices):
     """calculates distances in each axis between two vertices:
     eg: get_distance_between_two_vertices(OBJECT.vertices('<Y'))"""
