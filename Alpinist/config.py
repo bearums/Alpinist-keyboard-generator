@@ -92,7 +92,6 @@ def read_config_from_json( **kwargs):
         if 'string' in kwargs.keys():
             dict = json.loads(kwargs['string'])
         else:
-
             with open(kwargs['file'], 'r') as f:
                 dict= json.load(f)
 
