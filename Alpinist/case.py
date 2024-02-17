@@ -92,7 +92,6 @@ def make_controller_box_top_plate(config,topPlateThickness=1):
 
         edges.add(edges.polyline([ firstPoint, lastPoint])) # draw bottom line
 
-
         controller_box_top = edges.wire().extrude(-topPlateThickness, combine=False)
         return controller_box_top
 
@@ -113,9 +112,9 @@ def cut_aviator_connector_hole(case, config):
     return case 
 
 def make_case(config:Config, 
-              modify_controller_box:function = None,
-              get_screw_positions:function = get_screw_positions,
-              cut_hole_for_connector:function = None,
+              modify_controller_box:callable = None,
+              get_screw_positions:callable = get_screw_positions,
+              cut_hole_for_connector:callable = None,
               ) -> cq.Sketch:
    
     
@@ -162,7 +161,8 @@ def make_case(config:Config,
 
     return case
 
-def get_distance_between_two_vertices(vertices):
+    
+def get_distance_between_two_shapes(vertices):
     """calculates distances in each axis between two vertices:
     eg: get_distance_between_two_vertices(OBJECT.vertices('<Y'))"""
     assert len(vertices.vals())==2, "Must have only 2 vertices! %s, vertices selected"%(len(vertices.vals()))

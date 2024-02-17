@@ -72,7 +72,7 @@ class PiPico(Controller):
     name = "Pi Pico"
 
     screw_hole_x = 47.0
-    screw_hole_y = 11.1
+    screw_hole_y = 11.4
     
     board_dimension_x = 51.0
     board_dimension_y = 21.0

@@ -43,7 +43,7 @@ class Config:
                  
                  
                  caseHeight = 22,
-                 caseGap = 1.0,
+                 caseGap = 0.5,
                  wallThickness = 1.6,
                  floorThickness = 3.0,
                  edgeFillet = 4,
@@ -91,13 +91,17 @@ class Config:
             json.dump(dict_to_write, f, indent=4 )
     
 
-def read_config_from_json( file):
-        with open(file, 'r') as f:
-            dict= json.load(f)
+def read_config_from_json( **kwargs):
+        if 'string' in kwargs.keys():
+            dict = json.loads(kwargs['string'])
+        else:
+
+            with open(kwargs['file'], 'r') as f:
+                dict= json.load(f)
 
         if dict['controller'] == 'None':
             dict['controller'] = None
         else:
             dict['controller']  = ControllerFromDict(dict['controller'] )
-        return Config(dict)
+        return Config(**dict)
 
