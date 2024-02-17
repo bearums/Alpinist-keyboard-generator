@@ -43,12 +43,13 @@ def cut_holes_in_top_plate(top):
     led_num=3
     led_array_start_x = -6
     led_spacing = 7
+    led_hole_dia = 5.15
 
     #cut holes for LEDs
     for i in range(0,led_num):
         top= (top.faces('>Z').workplane(centerOption="CenterOfBoundBox")
             .moveTo(led_array_start_x - i*led_spacing,(-0.5))
-            .circle(2)
+            .circle(0.5*led_hole_dia)
             .cutThruAll()
         )
 
