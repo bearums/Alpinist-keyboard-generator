@@ -36,32 +36,7 @@ def get_key_positions(config: Config) -> [(float, float)]:
 
     return kp     
 
-def get_screw_positions(config: Config) -> [(float, float)]:
-    sp=[]
-    x_centre = max(config.row_key_numbers)* config.rowSpacing*0.5
-    row_holes = list(reversed( [config.row_key_numbers[0]]+ config.row_key_numbers)) 
-    nrows = len(config.row_key_numbers)
-    for col_num in range(0,nrows+1,2):    
-        row_size = row_holes[col_num]
-        centre = row_size* config.rowSpacing*0.5
 
-        if centre != x_centre:
-            x_trans = x_centre - centre
-        else:
-            x_trans = 0
-            
-        if row_size%2 ==0: #for rows with even key numbers
-            for row_num in range(1,row_size+1, 2):
-                sp.append((config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing,
-                       config.columnSpacing*col_num-0.5*config.columnSpacing))
-
-        else: # for rows with odd key numbers
-            for row_num in range(0,row_size, 2):
-                sp.append((config.rowSpacing*row_num+x_trans-0.0*config.rowSpacing,
-                       config.columnSpacing*col_num-0.5*config.columnSpacing))
-        
-        
-    return sp
 
 def get_base(config: Config, kp, thickness,base_fillet, window=False):
 
@@ -94,13 +69,45 @@ def get_base(config: Config, kp, thickness,base_fillet, window=False):
 
     return base
 
-def make_plate(config:Config, holes=True) -> cq.Sketch:
+def get_screw_positions(config: Config) -> [(float, float)]:
+    sp=[]
+    x_centre = max(config.row_key_numbers)* config.rowSpacing*0.5
+    row_holes = config.row_key_numbers
+    print(row_holes)
+    nrows = len(config.row_key_numbers)
+    for col_num in range(0,nrows,1):    
+        row_size = row_holes[col_num]
+        centre = row_size* config.rowSpacing*0.5
+
+        if centre != x_centre:
+            x_trans = x_centre - centre
+        else:
+            x_trans = 0
+            
+        if row_size%2 ==0: #for rows with even key numbers
+            print(col_num, row_size)
+            for row_num in range(0,row_size, 2):
+                hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
+                hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
+                sp.append((hole_x_pos, hole_y_pos))
+                
+        else: # for rows with odd key numbers
+            print(col_num, row_size)
+            for row_num in range(0,row_size, 2):
+                hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
+                hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
+                sp.append((hole_x_pos, hole_y_pos))
+    return sp
+
+def make_plate(config:Config, 
+               get_screw_hole_positions:callable=get_screw_positions) -> cq.Sketch:
     key_hole_shape = get_key_hole_shape(config)
     kp = get_key_positions(config)
     plate = get_base(config, kp, thickness=config.plateThickness, base_fillet=config.edgeFillet, window=False).cut(get_keys(kp, key_hole_shape, config))
-    hole_psns= get_screw_positions(config)
-    if holes:
-        plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)
+    
+    
+    hole_psns= get_screw_hole_positions(config)
+    plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)
     return plate
 
 
