@@ -158,24 +158,3 @@ def get_distance_between_two_shapes(vertices):
                 'y': abs(vals[0][1]- vals[1][1]),
                 'z': abs(vals[0][2]- vals[1][2])}
     return distance
-
-
-if __name__ =="__main__":
-    from cadquery import exporters
-    
-    nrows = 2
-    rkn = [1,2]
-    switchHoleSize= 13.9
-    config=Config( rkn, shape=Shape.LEAN, 
-                  caseHeight=3, plateThickness=1,  
-              cs= switchHoleSize+3.4505, rs= switchHoleSize+5.508,
-             switchHoleSize= switchHoleSize,
-                 caseGap=1.0,
-                 wallThickness=1.2,)
-    pl = make_plate(config, holes=False)
-    case = make_case(config)
-    
-    exporters.export(pl, 'plate.stl', tolerance=0.001, angularTolerance=0.05)
-    exporters.export(case, 'case.stl', tolerance=0.001, angularTolerance=0.05)
-
-    

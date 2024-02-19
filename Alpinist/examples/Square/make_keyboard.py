@@ -1,16 +1,17 @@
 import cadquery as cq
+import os
 import sys
-sys.path.append('../')
+sys.path.append('../../')
 from config import read_config_from_json
 from plate import make_plate
 from case import make_case, get_distance_between_two_shapes
 
 config_dict = """{
     "row_key_numbers": [
-        7,
-        10,
-        10,
-        10
+        4,
+        4,
+        4,
+        4
     ],
     "columnSpacing": 19,
     "rowSpacing": 19,
@@ -19,11 +20,11 @@ config_dict = """{
     "switchHoleSize": 13.9,
     "shape": 0,
     "notched_keyhole": true,
-    "caseHeight": 22,
+    "caseHeight": 20,
     "caseGap": 1.0,
     "wallThickness": 1.6,
     "floorThickness": 3.0,
-    "edgeFillet": 3,
+    "edgeFillet": 6,
     "bottomFillet": 2,
     "controller": {
         "name": "Pi Pico",
@@ -40,33 +41,23 @@ config = read_config_from_json(string=config_dict)
 
 def cut_holes_in_top_plate(top):
     top_plate_width = get_distance_between_two_shapes(top.edges('|Y and >Z'))['x']
-    led_num=3
-    led_array_start_x = -6
-    led_spacing = 7
+    led_num=4
+    led_spacing = 3.8
+
+    led_posns = [(led_spacing,led_spacing),(-led_spacing,led_spacing), 
+                 (led_spacing,-led_spacing), (-led_spacing,-led_spacing)]
     led_hole_dia = 5.15
 
     #cut holes for LEDs
     for i in range(0,led_num):
+        pos = led_posns[i]
         top= (top.faces('>Z').workplane(centerOption="CenterOfBoundBox")
-            .moveTo(led_array_start_x - i*led_spacing,(-0.5))
+            .moveTo(pos[0], pos[1])
             .circle(0.5*led_hole_dia)
             .cutThruAll()
         )
 
-    # add slot for potentiometer
-    circle_dia = 9.1
-    flat_width = 8.1
-    encoder_hole_centre = (16, -1)
-    top = (top.faces('>Z').workplane(centerOption="CenterOfBoundBox")
-        .center(encoder_hole_centre[0],encoder_hole_centre[1])
-        .moveTo(-0.5*flat_width, ((0.5*circle_dia)**2 - (0.5*flat_width)**2)**0.5)
-        .threePointArc((0, 0.5*circle_dia), (0.5*flat_width, ((0.5*circle_dia)**2 - (0.5*flat_width)**2)**0.5))
-        .vLine(-10)
-        .hLine(-flat_width)
-        .vLine(10)
-        .wire()
-        .cutThruAll()
-    )
+
     return top
 
 def cut_aviator_connector_hole(case):
@@ -91,9 +82,14 @@ case = make_case(config,
                  modify_controller_box=cut_holes_in_top_plate,
                  cut_hole_for_connector=cut_aviator_connector_hole)
 
-#plate= make_plate(config)
-#assy = cq.Assembly()
-#assy.add(case)
-#assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
+plate= make_plate(config)
+assy = cq.Assembly()
+assy.add(case)
+assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
 
-cq.exporters.export(case, "case.stl")
+file_location = os.path.abspath(os.path.dirname(__file__))
+
+assy.save( os.path.join(file_location, "KB.stl"))
+
+
+

@@ -73,7 +73,6 @@ def get_screw_positions(config: Config) -> [(float, float)]:
     sp=[]
     x_centre = max(config.row_key_numbers)* config.rowSpacing*0.5
     row_holes = config.row_key_numbers
-    print(row_holes)
     nrows = len(config.row_key_numbers)
     for col_num in range(0,nrows,1):    
         row_size = row_holes[col_num]
@@ -85,15 +84,13 @@ def get_screw_positions(config: Config) -> [(float, float)]:
             x_trans = 0
             
         if row_size%2 ==0: #for rows with even key numbers
-            print(col_num, row_size)
-            for row_num in range(0,row_size, 2):
+            for row_num in range(1,row_size, 2):
                 hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
                 hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
                 sp.append((hole_x_pos, hole_y_pos))
                 
         else: # for rows with odd key numbers
-            print(col_num, row_size)
-            for row_num in range(0,row_size, 2):
+            for row_num in range(1,row_size, 2):
                 hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
                 hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
                 sp.append((hole_x_pos, hole_y_pos))
@@ -110,22 +107,4 @@ def make_plate(config:Config,
     plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)
     return plate
 
-
-if __name__ =="__main__":
-    from cadquery import exporters
-
-    nrows = 5
-    rkn = [1,3,5,2,3]
-
-    cc=Config(nrows, rkn, shape=Shape.LEAN)
-    pl = make_plate(cc)
-    exporters.export(pl, 'plate.stl', tolerance=0.001, angularTolerance=0.05)
-    
-
-#ncols = 4
-#rkn = [7,7,7,6]
-
-#cc=Config(ncols, rkn)
-#kp = get_key_positions(cc)
-#get_keys(kp, key_hole_shape, cc)
 
