@@ -49,7 +49,7 @@ class Config:
                  bottomFillet = 2,
                  
                  controller = AdafruitFeathernRF52840Express(),
-                 controllerYOffset = 5,
+                 controllerYOffset = 3,
                  controllerBoxThickness = 2,
 
                  

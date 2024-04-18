@@ -25,7 +25,7 @@ config_dict = """{
     "wallThickness": 1.6,
     "floorThickness": 3.0,
     "edgeFillet": 3,
-    "bottomFillet": 2,
+    "bottomFillet": 1,
     "controller": {
         "name": "Pi Pico",
         "board_dimension_x": 51.0,
@@ -33,7 +33,7 @@ config_dict = """{
         "screw_hole_x": 47.0,
         "screw_hole_y": 11.4
     },
-    "controllerYOffset": 5,
+    "controllerYOffset": 6,
     "controllerBoxThickness": 2
 }"""
 

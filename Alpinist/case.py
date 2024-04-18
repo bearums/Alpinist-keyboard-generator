@@ -120,7 +120,7 @@ def make_case(config:Config,
     scr_hls = get_screw_positions(config)
     case=(case.faces('<Z').workplane(origin=(0,0))
           .pushPoints([(x,-y) for x,y in scr_hls])
-          .cskHole(2.4, 4.8, 82, depth=None)    
+          .cskHole(config.screwHoleDiamater, 2*config.screwHoleDiamater, 82, depth=None)    
           )
 
     
@@ -128,15 +128,15 @@ def make_case(config:Config,
     if cut_hole_for_connector is not None:
         case = cut_hole_for_connector(case)
 
+
     # add controllerbox holes.
-    # TODO - remove hardcoding on screw hole size
-    # if config.controller is not None:
-    #     case = (case.workplaneFromTagged("controllerBox")
-    #             .rect(config.controller.screw_hole_x,
-    #                     config.controller.screw_hole_y- config.wallThickness - config.controllerYOffset - (config.controller.board_dimension_y -config.controller.screw_hole_y)*0.5, 
-    #                     forConstruction=True ,centered=[True,True,True])
-    #             .vertices()
-    #             .cskHole(2.4, 4.8, 82, depth=None))
+    if config.controller is not None:
+        case = (case.faces(tag='controllerBox').workplane(centerOption="CenterOfBoundBox", invert=False)
+                .center(0, config.controllerYOffset )
+                .rect(config.controller.screw_hole_x, config.controller.screw_hole_y, forConstruction=True, centered=[True,True,True])
+                .vertices()
+                .cskHole(config.screwHoleDiamater, 2*config.screwHoleDiamater, 82, depth=None)
+        )
     
     # make top plate for controller box
     if config.controller is not None:
@@ -144,6 +144,7 @@ def make_case(config:Config,
         if modify_controller_box is not None:
             top = modify_controller_box(top)
         case = case.union(top)
+        
 
     return case
 
