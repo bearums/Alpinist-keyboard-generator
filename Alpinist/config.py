@@ -33,6 +33,7 @@ class Config:
 
         
     def __init__(self, row_key_numbers, 
+                 name = None,
                  columnSpacing = 19, rowSpacing = 19, 
                  switchHoleSize = 13.9,
                  plateThickness = 2,
@@ -56,6 +57,7 @@ class Config:
                  
                 ):
         self.row_key_numbers = row_key_numbers
+        self.name = name
         self.columnSpacing = columnSpacing
         self.rowSpacing = rowSpacing
         self.plateThickness = plateThickness

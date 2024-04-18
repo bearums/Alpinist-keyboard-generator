@@ -84,7 +84,11 @@ def get_screw_positions(config: Config) -> [(float, float)]:
             x_trans = 0
             
         if row_size%2 ==0: #for rows with even key numbers
-            for row_num in [1, 0.5*row_size,row_size-1]:#range(1,row_size, 2):
+            if row_size >5: 
+                hole_posns = [1, 0.5*row_size,row_size-1]
+            else:
+                hole_posns = [1, row_size-1]
+            for row_num in hole_posns:
                 hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
                 hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
                 sp.append((hole_x_pos, hole_y_pos))

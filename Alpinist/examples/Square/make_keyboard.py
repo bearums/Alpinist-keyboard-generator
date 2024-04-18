@@ -7,6 +7,7 @@ from plate import make_plate
 from case import make_case, get_distance_between_two_shapes
 
 config_dict = """{
+    "name": "square",
     "row_key_numbers": [
         4,
         4,
@@ -21,7 +22,7 @@ config_dict = """{
     "shape": 0,
     "notched_keyhole": true,
     "caseHeight": 20,
-    "caseGap": 1.0,
+    "caseGap": 0.6,
     "wallThickness": 1.6,
     "floorThickness": 3.0,
     "edgeFillet": 6,
@@ -89,7 +90,10 @@ assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
 
 file_location = os.path.abspath(os.path.dirname(__file__))
 
-assy.save( os.path.join(file_location, "KB.stl"))
 
+assy.save( os.path.join(file_location, "%s.stl"% config.name))
+
+cq.exporters.export(case, os.path.join(file_location,"%s_case.stl"% config.name))
+cq.exporters.export(plate, os.path.join(file_location,"%s_plate.stl"% config.name))
 
 

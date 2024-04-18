@@ -7,6 +7,7 @@ from plate import make_plate
 from case import make_case, get_distance_between_two_shapes
 
 config_dict = """{
+    "name" : "Alpinist01",
     "row_key_numbers": [
         7,
         10,
@@ -99,4 +100,7 @@ assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
 
 file_location = os.path.abspath(os.path.dirname(__file__))
 
-assy.save( os.path.join(file_location, "KB.stl"))
+assy.save( os.path.join(file_location, "%s.stl"% config.name))
+
+cq.exporters.export(case, os.path.join(file_location,"%s_case.stl"% config.name))
+cq.exporters.export(plate, os.path.join(file_location,"%s_plate.stl"% config.name))
