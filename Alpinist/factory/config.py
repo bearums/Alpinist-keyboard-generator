@@ -1,11 +1,7 @@
 import json
-from enum import IntEnum
 from controller import Controller, ControllerFromDict
 from controller import AdafruitFeathernRF52840Express
 
-class Shape(IntEnum):
-    LEAN = 0
-    HULL = 1
 
 
 class Config:
@@ -14,9 +10,9 @@ class Config:
     rowSpacing: float
     switchHoleSize: float
     plateThickness: float
-    shape: Shape
     screwHoleDiameter: float
     notched_keyhole: bool
+    plateEdgeOffset: float
     
         
     caseHeight: float
@@ -35,12 +31,11 @@ class Config:
     def __init__(self, row_key_numbers, 
                  name = None,
                  columnSpacing = 19, rowSpacing = 19, 
-                 switchHoleSize = 13.9,
-                 plateThickness = 2,
-                 shape = Shape.LEAN,
+                 switchHoleSize = 14.0,
+                 plateThickness = 1.8,
                  screwHoleDiamater = 2.4,
                  notched_keyhole = True,
-                 
+                 plateEdgeOffset = -2.0,
                  
                  caseHeight = 22,
                  caseGap = 0.5,
@@ -63,9 +58,8 @@ class Config:
         self.plateThickness = plateThickness
         self.screwHoleDiamater = screwHoleDiamater
         self.switchHoleSize = switchHoleSize
-        self.shape = shape
         self.notched_keyhole = notched_keyhole
-        
+        self.plateEdgeOffset = plateEdgeOffset
         
         self.caseHeight = caseHeight
         self.caseGap = caseGap

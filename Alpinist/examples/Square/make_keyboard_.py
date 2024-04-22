@@ -21,12 +21,13 @@ config_dict = """{
     "switchHoleSize": 13.9,
     "shape": 0,
     "notched_keyhole": true,
-    "caseHeight": 20,
+    "caseHeight": 18,
     "caseGap": 0.6,
-    "wallThickness": 1.6,
+    "wallThickness": 2.0,
     "floorThickness": 3.0,
     "edgeFillet": 6,
     "bottomFillet": 2,
+    "plateEdgeOffset":-1,
     "controller": {
         "name": "Pi Pico",
         "board_dimension_x": 51.0,
@@ -65,7 +66,7 @@ def cut_aviator_connector_hole(case):
 
     aviator_hole_dia = 6.25
     aviator_flat_width = 5.3
-    aviator_hole_height =  1
+    aviator_hole_height =  -1
 
     case = (case.faces(">Y").workplane(centerOption='CenterOfBoundBox')
                     .center(0,aviator_hole_height)

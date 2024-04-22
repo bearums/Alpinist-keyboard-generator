@@ -2,8 +2,8 @@ import cadquery as cq
 from cadquery import Selector
 from cadquery.occ_impl.geom import Vector
 
-from plate import Config, Shape
-from plate import make_plate, get_key_positions, get_screw_positions
+from plate import Config
+from plate import get_key_positions, get_screw_positions, get_plate_shape
 
 class CustomisableSelector(Selector):
     """A Cadquery selector that allows the filter to be directly set. 
@@ -16,27 +16,16 @@ class CustomisableSelector(Selector):
     def set_filter(self, filter_function):
         self.filter = filter_function
 
+
 def get_basic_shape(config:Config) -> cq.Sketch:
 
     kp = get_key_positions(config)
+    plate_shape = get_plate_shape(config, kp, config.plateEdgeOffset)
+    
+    basic_shape_wire= plate_shape.offset2D(config.caseGap, 'intersection')
+    
+    basic_shape = cq.Workplane().add(basic_shape_wire).wires().toPending().extrude(config.caseHeight)
 
-    foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
-                            config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
-
-        
-    plate_recess = cq.Sketch()
-    plate_recess = plate_recess.push(list(kp.values()))
-    plate_recess = (plate_recess.rect(foot_x+(config.caseGap)*2, 
-                      foot_y+(config.caseGap)*2)
-                    .faces()
-                    .clean()
-                    #.offset(config.wallThickness)
-                    .clean())
-            
-        
-    basic_shape= (cq.Workplane()
-           .placeSketch(plate_recess)
-           .extrude(config.caseHeight))
     basic_shape.edges('>Y').tag('topEdge')
     if config.controller is not None:
         basic_shape = add_microcontrollerbox(basic_shape, config)
@@ -48,19 +37,21 @@ def get_basic_shape(config:Config) -> cq.Sketch:
     return basic_shape
 
 
+
 def add_microcontrollerbox(case, config):
         controller_y_offset = config.controllerYOffset
         controllerBoxLength = config.controller.board_dimension_y - controller_y_offset
-        controllerBoxWidth=config.controller.board_dimension_x + 5
+        controllerBoxWidth=config.controller.board_dimension_x + 4
         
         ctrBox = (case
                 .edges('>Y and <Z')
                 .workplane(centerOption="CenterOfBoundBox", invert=False)
                 .box(controllerBoxWidth,controllerBoxLength, config.caseHeight, centered=[True,False,False],combine=False)
+                .clean()
                 )
         ctrBox.faces('<Z').tag("controllerBox")
 
-        case = case.union(ctrBox)
+        case = case.union(ctrBox).clean()
         return case
 
 def make_controller_box_top_plate(config,topPlateThickness=1):

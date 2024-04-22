@@ -37,37 +37,39 @@ def get_key_positions(config: Config) -> [(float, float)]:
     return kp     
 
 
-
-def get_base(config: Config, kp, thickness,base_fillet, window=False):
-
+def get_plate_shape(config: Config, kp, offset):
     foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
                       config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
     base = cq.Sketch()
    
-
     base = base.push(kp.values())
-    if config.shape == Shape.LEAN:
-        base = base.rect(foot_x, foot_y)\
-            .faces().clean().vertices().fillet(base_fillet).faces()\
-            .wires().offset(0).clean()
-    elif config.shape == Shape.HULL:
-        base = base.rect(foot_x, foot_y)\
-            .faces().hull().clean().wires().offset(12)
+    
+    base = base.rect(foot_x, foot_y)\
+            .faces().clean().faces()\
+            .wires().clean()
 
-    base = cq.Workplane().placeSketch(base).extrude(thickness)
+    w = base.val().offset2D(offset, 'intersection')[0].close() # negative offset to remove space between case and keys on outside of plate
+   
+    return w
 
 
-    if window:
-        win = cq.Sketch().push(kp.values()).rect(config.columnSpacing / 2 +
-                                                 config.switchHoleSize, config.rowSpacing / 2 + config.switchHoleSize)
-        win = win.clean().faces().vertices().fillet(1)
-        win = cq.Workplane().placeSketch(win).extrude(thickness).rotate((0, 0, 0), (0, 0, 1), config.angle).translate(
-            (config.hOffset, 0))
-        #if not config.split:
-        win = win.mirror('YZ', union=True)
-        base = base.cut(win)
+# def get_base(config: Config, kp, thickness,base_fillet):
 
-    return base
+#     foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
+#                       config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
+#     base = cq.Sketch()
+   
+#     base = base.push(kp.values())
+#     base = base.rect(foot_x, foot_y)\
+#             .faces().clean().faces()\
+#             .wires().clean()
+
+#     w = base.val().offset2D(-2, 'intersection')[0].close() # negative offset to remove space between case and keys on outside of plate
+#     wp = cq.Workplane()
+#     wp=wp.add(w)
+#     base = wp.wires().toPending().extrude(thickness).edges('|Z').fillet(base_fillet)
+
+#     return base
 
 def get_screw_positions(config: Config) -> [(float, float)]:
     sp=[]
@@ -94,19 +96,36 @@ def get_screw_positions(config: Config) -> [(float, float)]:
                 sp.append((hole_x_pos, hole_y_pos))
                 
         else: # for rows with odd key numbers
-            for row_num in [1, row_size-1]:#range(1,row_size, 2):
-                hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
-                hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
-                sp.append((hole_x_pos, hole_y_pos))
+            if row_size != 1:
+                for row_num in [1, row_size-1]:#range(1,row_size, 2):
+                    hole_x_pos = config.rowSpacing*row_num+x_trans-0.5*config.rowSpacing
+                    hole_y_pos = config.columnSpacing*col_num+0.0*config.columnSpacing
+                    sp.append((hole_x_pos, hole_y_pos))
     return sp
+
+# def make_plate(config:Config, 
+#                get_screw_hole_positions:callable=get_screw_positions) -> cq.Sketch:
+#     key_hole_shape = get_key_hole_shape(config)
+#     kp = get_key_positions(config)
+#     plate = get_base(config, kp, thickness=config.plateThickness, base_fillet=config.edgeFillet).cut(get_keys(kp, key_hole_shape, config))
+    
+    
+#     hole_psns= get_screw_hole_positions(config)
+#     plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)
+#     return plate
+
 
 def make_plate(config:Config, 
                get_screw_hole_positions:callable=get_screw_positions) -> cq.Sketch:
+    
     key_hole_shape = get_key_hole_shape(config)
     kp = get_key_positions(config)
-    plate = get_base(config, kp, thickness=config.plateThickness, base_fillet=config.edgeFillet, window=False).cut(get_keys(kp, key_hole_shape, config))
+    plate_shape = get_plate_shape(config, kp, config.plateEdgeOffset)
     
-    
+    plate = cq.Workplane()
+    plate = plate.add(plate_shape).wires().toPending().extrude(config.plateThickness).edges('|Z').fillet(config.edgeFillet)
+    plate = plate.cut(get_keys(kp, key_hole_shape, config))
+
     hole_psns= get_screw_hole_positions(config)
     plate= plate.faces(">Z").workplane().pushPoints(hole_psns).hole(config.screwHoleDiamater)
     return plate
