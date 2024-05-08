@@ -5,26 +5,43 @@ from controller import AdafruitFeathernRF52840Express
 
 
 class Config:
-    row_key_numbers: list
+    row_key_numbers: list 
+    "number of keys on each row. Eg. [4,4] is for a keyboard with 2 rows each with 4 keys"
     columnSpacing: float
+    "center to center spacing between key columns in mm"
     rowSpacing: float
+    "center to center spacing between key rows in mm"
     switchHoleSize: float
+    "size of the switch hole in mm"
     plateThickness: float
+    "thickness of the switch plate in mm"
     screwHoleDiameter: float
+    "size of screws to fix switch plate to case in mm"
     notched_keyhole: bool
+    "option for notched keyhole"
     plateEdgeOffset: float
+    "amount in mm to remove from plate edge. Prevents a large gap between the case and keys on the perimeter"
     
         
-    caseHeight: float
+    caseHeight: float 
+    "case height in mm"
     caseGap: float
+    "size difference between the case and the switch plate in mm"
     wallThickness: float
+    "thickness of case sidewalls in mm"
     floorThickness: float
+    "bottom thickness of case in mm"
     edgeFillet: float
+    "fillet radius in mm of case edge"
     bottomFillet: float
+    "fillet radius in mm of case bottom"
         
     controller : Controller
+    "micro controller to use"
     controllerYOffset : float
+    "amount to offset microcontroller screwholes in y direction in mm"
     controllerBoxThickness : float
+    "thichness of controller box top in mm"
 
 
         
