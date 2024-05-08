@@ -1,7 +1,7 @@
 import cadquery as cq
 import sys
 import os
-sys.path.append('../')
+sys.path.append('../../factory')
 from config import read_config_from_json
 from plate import make_plate
 from case import make_case, get_distance_between_two_shapes
@@ -18,7 +18,7 @@ config_dict = """{
     "rowSpacing": 19,
     "plateThickness": 2,
     "screwHoleDiamater": 2.4,
-    "switchHoleSize": 13.9,
+    "switchHoleSize": 13.97,
     "shape": 0,
     "notched_keyhole": true,
     "caseHeight": 22,

@@ -1,11 +1,11 @@
 import sys
-#sys.path.append('../')
+sys.path.append('../factory')
 #from config import read_config_from_json
 #from plate import make_plate
 #from case import make_case
 import cadquery as cq
 import os
-from factory.config import read_config_from_json
+from config import read_config_from_json
 
 
 def make_kb(config_dict: str,

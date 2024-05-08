@@ -1,6 +1,7 @@
 import sys
-sys.path.append('../')
-
+import os
+#sys.path.append('../')
+sys.path.append(os.path.relpath('../'))
 from make_keyboard import make_kb
 
 config_dict = """{
@@ -15,7 +16,7 @@ config_dict = """{
     "rowSpacing": 19,
     "plateThickness": 2,
     "screwHoleDiamater": 2.4,
-    "switchHoleSize": 13.9,
+    "switchHoleSize": 13.97,
     "shape": 0,
     "notched_keyhole": true,
     "caseHeight": 18,
