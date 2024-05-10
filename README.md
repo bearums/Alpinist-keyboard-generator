@@ -1,4 +1,4 @@
-Alpinist generates keyboards with arbitrary numbers of keys on each row
+Alpinist generates parametric keyboards with arbitrary numbers of keys on each row using Python's [cadquery](https://github.com/CadQuery/cadquery) 
 
 
 
