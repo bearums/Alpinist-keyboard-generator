@@ -2,8 +2,8 @@ import cadquery as cq
 from cadquery import Selector
 from cadquery.occ_impl.geom import Vector
 
-from plate import Config
-from plate import get_key_positions, get_screw_positions, get_plate_shape
+from factory.plate import get_key_positions, get_screw_positions, get_plate_shape
+from factory.config import Config
 
 class CustomisableSelector(Selector):
     """A Cadquery selector that allows the filter to be directly set. 

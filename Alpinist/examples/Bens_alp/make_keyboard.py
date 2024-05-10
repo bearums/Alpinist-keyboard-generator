@@ -1,10 +1,8 @@
 import cadquery as cq
-import sys
 import os
-sys.path.append('../../factory')
-from config import read_config_from_json
-from plate import make_plate
-from case import make_case, get_distance_between_two_shapes
+from factory.config import read_config_from_json
+from factory.plate import make_plate
+from factory.case import make_case, get_distance_between_two_shapes
 
 config_dict = """{
     "name" : "Alpinist01",
@@ -19,7 +17,6 @@ config_dict = """{
     "plateThickness": 2,
     "screwHoleDiamater": 2.4,
     "switchHoleSize": 13.97,
-    "shape": 0,
     "notched_keyhole": true,
     "caseHeight": 22,
     "caseGap": 1.0,
@@ -89,18 +86,22 @@ def cut_aviator_connector_hole(case):
     return case 
 
 
+# make keyboard case
 case = make_case(config,
                  modify_controller_box=cut_holes_in_top_plate,
                  cut_hole_for_connector=cut_aviator_connector_hole)
 
+# make keyboard plate
 plate= make_plate(config)
+
+
+# assemble plate and case
 assy = cq.Assembly()
 assy.add(case)
 assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
 
+# save stls
 file_location = os.path.abspath(os.path.dirname(__file__))
-
 assy.save( os.path.join(file_location, "%s.stl"% config.name))
-
 cq.exporters.export(case, os.path.join(file_location,"%s_case.stl"% config.name))
 cq.exporters.export(plate, os.path.join(file_location,"%s_plate.stl"% config.name))

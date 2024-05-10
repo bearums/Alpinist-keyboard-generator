@@ -1,6 +1,6 @@
 import json
-from controller import Controller, ControllerFromDict
-from controller import AdafruitFeathernRF52840Express
+from factory.controller import Controller, ControllerFromDict
+from factory.controller import AdafruitFeathernRF52840Express
 
 
 
@@ -68,8 +68,8 @@ class Config:
                  
                  
                 ):
-        self.row_key_numbers = row_key_numbers
         self.name = name
+        self.row_key_numbers = row_key_numbers
         self.columnSpacing = columnSpacing
         self.rowSpacing = rowSpacing
         self.plateThickness = plateThickness

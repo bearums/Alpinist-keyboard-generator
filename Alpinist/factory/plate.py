@@ -1,5 +1,5 @@
 import cadquery as cq
-from config import Config, Shape
+from factory.config import Config
 
 
 def get_keys(kp, key_shape, config):
@@ -39,7 +39,7 @@ def get_key_positions(config: Config) -> [(float, float)]:
 
 def get_plate_shape(config: Config, kp, offset):
     foot_x, foot_y = (config.columnSpacing / 2 + config.switchHoleSize, config.rowSpacing / 2 +
-                      config.switchHoleSize) if config.shape == Shape.LEAN else (config.switchHoleSize, config.switchHoleSize)
+                      config.switchHoleSize) 
     base = cq.Sketch()
    
     base = base.push(kp.values())

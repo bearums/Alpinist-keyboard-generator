@@ -1,10 +1,9 @@
 import cadquery as cq
 import os
-import sys
-sys.path.append('../../')
-from config import read_config_from_json
-from plate import make_plate
-from case import make_case, get_distance_between_two_shapes
+from factory.config import read_config_from_json
+from factory.plate import make_plate
+from factory.case import make_case, get_distance_between_two_shapes
+
 
 config_dict = """{
     "name": "Tbaum",
@@ -20,7 +19,6 @@ config_dict = """{
     "plateThickness": 2,
     "screwHoleDiamater": 2.4,
     "switchHoleSize": 13.97,
-    "shape": 0,
     "notched_keyhole": true,
     "caseHeight": 20,
     "caseGap": 0.6,
@@ -35,26 +33,7 @@ config_dict = """{
 
 config = read_config_from_json(string=config_dict)
 
-def cut_holes_in_top_plate(top):
-    top_plate_width = get_distance_between_two_shapes(top.edges('|Y and >Z'))['x']
-    led_num=4
-    led_spacing = 3.8
 
-    led_posns = [(led_spacing,led_spacing),(-led_spacing,led_spacing), 
-                 (led_spacing,-led_spacing), (-led_spacing,-led_spacing)]
-    led_hole_dia = 5.15
-
-    #cut holes for LEDs
-    for i in range(0,led_num):
-        pos = led_posns[i]
-        top= (top.faces('>Z').workplane(centerOption="CenterOfBoundBox")
-            .moveTo(pos[0], pos[1])
-            .circle(0.5*led_hole_dia)
-            .cutThruAll()
-        )
-
-
-    return top
 
 def cut_aviator_connector_hole(case):
 
@@ -73,22 +52,24 @@ def cut_aviator_connector_hole(case):
                     )
     return case 
 
-
+# make keyboard case
 case = make_case(config,
-                 modify_controller_box=cut_holes_in_top_plate,
+                 modify_controller_box=None,
                  cut_hole_for_connector=cut_aviator_connector_hole)
 
+# make keyboard plate
 plate= make_plate(config)
+
+# assemble plate and case
 assy = cq.Assembly()
 assy.add(case)
-assy.add(plate,loc=cq.Location(cq.Vector(0,0,18)) )
+assy.add(plate,loc=cq.Location(cq.Vector(0,0,16)) )
 
+# save stls
 file_location = os.path.abspath(os.path.dirname(__file__))
-
-
 assy.save( os.path.join(file_location, "%s.stl"% config.name))
-
 cq.exporters.export(case, os.path.join(file_location,"%s_case.stl"% config.name))
 cq.exporters.export(plate, os.path.join(file_location,"%s_plate.stl"% config.name))
+
 
 
